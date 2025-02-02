@@ -1,0 +1,15 @@
+# Node.js dependencies
+/frontend/node_modules/
+
+# Build files
+/frontend/build/
+/backend/build/
+/backend/target/
+
+# Environment variables
+*.env
+
+# Docker
+.dockerignore
+**/.env
+**/Dockerfile
