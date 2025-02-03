@@ -1,0 +1,6 @@
+"scripts": {
+"frontend-path": "cd expense-tracker-frontend",
+"start-frontend": "npm run frontend-path && npm start",
+"install-frontend": "npm run frontend-path && npm install",
+"build-frontend": "npm run frontend-path && npm run build"
+}
