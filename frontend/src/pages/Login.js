@@ -3,16 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import API from "../api/api";
 
 const Login = () => {
-    const [credentials, setCredentials] = useState({email: '', password: ''});
-    const [error, setError] = useState('');
+    const [credentials, setCredentials] = useState({username: "", password: ""});
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setCredentials({...credentials, [e.target.name]: e.target.value});
+        setCredentials({...credentials, [e.target.name]: e.target.value });
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log("Sending Credentials: ", credentials);
         try {
             const response = await API.post("/auth/login", credentials);
             localStorage.setItem('token', response.data.token);
@@ -29,11 +30,11 @@ const Login = () => {
                 {error && <p className="text-red-500">{error}</p>}
                 <form onSubmit={handleLogin}>
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-600">Email</label>
+                        <label className="block text-sm font-medium text-gray-600">User Name</label>
                         <input
-                            type="email"
-                            name="email"
-                            value={credentials.email}
+                            type="text"
+                            name="username"
+                            placeholder="Username"
                             onChange={handleChange}
                             className="w-full p-2 border rounded-lg"
                             required
@@ -44,7 +45,7 @@ const Login = () => {
                         <input
                             type="password"
                             name="password"
-                            value={credentials.password}
+                            placeholder="Password"
                             onChange={handleChange}
                             className="w-full p-2 border rounded-lg"
                             required

@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+jwt:
+   secret: ${JWT_SECRET:A8VWfFdPvvb8vHl0WxyKW5VwHpiRNgxL5FPkGkhsklY=} # Secret key from environment
+   expiration: ${JWT_EXPIRATION:36000000} # Default to 10 hours if not set
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/expense_tracker
@@ -15,3 +19,5 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+
+
