@@ -12,6 +12,6 @@ public class GenerateToken {
         System.out.println("Generated key: " + key);
 
         String decodedKey = new String(java.util.Base64.getDecoder().decode(key));
-        System.out.println("Decoded key: " + decodedKey);
+        //System.out.println("Decoded key: " + decodedKey);
     }
 }

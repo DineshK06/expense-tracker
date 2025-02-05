@@ -19,7 +19,7 @@ const ExpenseList = ({ expenses, deleteExpense }) => {
                     </thead>
                     <tbody>
                     {expenses.map((expense) => (
-                        <tr key={expense.id} className="border-b">
+                        <tr key={expense.id} className="border-b text-center">
                             <td className="p-2">{expense.title}</td>
                             <td className="p-2">${expense.amount}</td>
                             <td className="p-2">{expense.date}</td>

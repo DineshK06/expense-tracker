@@ -6,6 +6,7 @@ import com.expensetracker.security.JwtUtil;
 import com.expensetracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,12 +37,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> loginRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.get("username"), loginRequest.get("password"))
-        );
-        UserDetails userDetails = userService.loadUserByUsername(loginRequest.get("username"));
-        String token = jwtUtil.generateToken(userDetails);
-        return Map.of("token", token);
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.get("username"), loginRequest.get("password"))
+            );
+            UserDetails userDetails = userService.loadUserByUsername(loginRequest.get("username"));
+            String token = jwtUtil.generateToken(userDetails);
+
+            System.out.println("Generated Token: " + token);
+
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception e) {
+            System.err.println("Login failed: " + e.getMessage());
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
+        }
     }
 }

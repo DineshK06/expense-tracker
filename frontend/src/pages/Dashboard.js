@@ -55,11 +55,15 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-4">Expense Dashboard</h1>
-            <ExpenseForm addExpense={addExpense} />
-            <ExpenseList expenses={expenses} deleteExpense={deleteExpense} />
-            <ExpenseChart expenses={expenses} />
+        <div className="flex justify-center p-6">
+            <div className="w-full max-w-6xl">
+                <h1 className="text-3xl font-bold mb-4 text-center">Expense Dashboard</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ExpenseForm addExpense={addExpense} />
+                    <ExpenseChart expenses={expenses} />
+                </div>
+                <ExpenseList expenses={expenses} deleteExpense={deleteExpense} />
+            </div>
         </div>
     );
 };

@@ -1,25 +1,43 @@
 package com.expensetracker.security;
 
-import com.expensetracker.config.JwtConfig;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    private final JwtConfig jwtConfig;
+    @Value("${jwt.secret}")
+    private  String secretKey;
 
-    public JwtUtil(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
+    @Value("${jwt.expiration}")
+    private  long expiration;
+
+    private SecretKey currentKey;
+    private final Map<Date, SecretKey> keyHistory = new LinkedHashMap<>();
+
+
+    @PostConstruct
+    public void init() {
+        rotateKey();
+    }
+
+    public void rotateKey() {
+        this.currentKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+        keyHistory.put(new Date(), currentKey);
     }
 
     public String extractUsername(String token) {
@@ -28,7 +46,7 @@ public class JwtUtil {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtConfig.getSecretKey())
+                .setSigningKey(currentKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -39,8 +57,8 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration())) //10 hours
-                .signWith(jwtConfig.getSecretKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration)) //10 hours
+                .signWith(currentKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -49,6 +67,13 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        try {
+            return extractClaim(token, Claims::getExpiration).before(new Date());
+        } catch (ExpiredJwtException e) {
+            System.out.println("JWT Expired: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("JWT Validation Error: " + e.getMessage());
+        }
+        return false;
     }
 }
